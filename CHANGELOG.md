@@ -7,6 +7,181 @@ and this project adheres (more or less) to [Semantic Versioning](http://semver.o
 
 ## Unreleased
 
+## 0.25.1
+
+- fix error when using `week` unit causing format error in `DateHeader` #562 @dkarnutsch
+- fix Wheel/Mousewheel Event errors on chrome 73 #541 @ilaiwi
+
+## 0.25.0
+
+### Custom Headers
+
+This new feature gives more control to dev to create customizable headers to provide better UI. Now user have more control through a set of new components to render headers. This new feature came with a breaking change though.
+
+
+```jsx
+import Timeline, {
+  TimelineHeaders,
+  SidebarHeader,
+  DateHeader
+} from 'react-calendar-timeline'
+
+<Timeline>
+  <TimelineHeaders>
+    <SidebarHeader>
+      {({ getRootProps }) => {
+        return <div {...getRootProps()}>Left</div>
+      }}
+    </SidebarHeader>
+    <DateHeader unit="primaryHeader" />
+    <DateHeader />
+    <CustomHeader height={50} headerData={{someData: 'data'}} unit="year">
+      {({
+        headerContext: { intervals },
+        getRootProps,
+        getIntervalProps,
+        showPeriod,
+        data,
+      }) => {
+        return (
+          <div {...getRootProps()}>
+            {intervals.map(interval => {
+              const intervalStyle = {
+                lineHeight: '30px',
+                textAlign: 'center',
+                borderLeft: '1px solid black',
+                cursor: 'pointer',
+                backgroundColor: 'Turquoise',
+                color: 'white'
+              }
+              return (
+                <div
+                  onClick={() => {
+                    showPeriod(interval.startTime, interval.endTime)
+                  }}
+                  {...getIntervalProps({
+                    interval,
+                    style: intervalStyle
+                  })}
+                >
+                  <div className="sticky">
+                    {interval.startTime.format('YYYY')}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )
+      }}
+    </CustomHeader>
+  </TimelineHeaders>
+</Timeline>
+```
+
+Check out the new docs before please [here](https://github.com/namespace-ee/react-calendar-timeline/tree/custom-headers#timeline-headers)
+
+#### removed props
+- `stickyOffset` and `stickyHeader` now you can make your header sticky by following this [examples](https://github.com/namespace-ee/react-calendar-timeline/tree/master/examples#custom-item-rendering)
+- `headerRef` to get the headerRef you need to pass ref callback to `TimelineHeader` component
+- `headerLabelGroupHeight` and `headerLabelHeight` now you can pass a `height` prop to both `CustomHeader` and `DateHeader`
+- `headerLabelFormats` and `subHeaderLabelFormats` not you can pass `formatLabel` function to `DateHeader` with label width and start and end time of intervals
+
+
+## 0.23.1
+
+- fix height calculation of stacked items is off if no item is visible in a line @Felix-N
+- fix Unsubscribing markers correctly when unmounted @gaston-niglia
+
+## 0.23.0
+
+- improve unit tests coverage #426 - @ilaiwi
+- stack items by group #384 - @acemac
+- fix bug where `canMove` prop gets ignored #484 - @acemac + @ilaiwi
+- fix sidebar re-render when groupHeights do not change #478 - @SDupZ
+
+### Stack per group
+
+now you can stack choose to stack items in individual groups by providing the property `stackItems` in group object. The property in group overrides the timeline prop `stackItems`.
+
+```
+const groups = [{ id: 1, title: 'group 1', stackItems: false }, { id: 2, title: 'group 2', stackItems: true }]
+
+const items = [
+  {
+    id: 1,
+    group: 1,
+    title: 'item 1',
+    start_time: moment(),
+    end_time: moment().add(1, 'hour')
+  },
+  {
+    id: 2,
+    group: 2,
+    title: 'item 2',
+    start_time: moment().add(-0.5, 'hour'),
+    end_time: moment().add(0.5, 'hour')
+  },
+  {
+    id: 3,
+    group: 1,
+    title: 'item 3',
+    start_time: moment().add(2, 'hour'),
+    end_time: moment().add(3, 'hour')
+  }
+]
+
+ReactDOM.render(
+  <div>
+    Rendered by react!
+    <Timeline
+      groups={groups}
+      items={items}
+      defaultTimeStart={moment().add(-12, 'hour')}
+      defaultTimeEnd={moment().add(12, 'hour')}
+    />
+  </div>,
+  document.getElementById('root')
+)
+```
+
+
+## 0.22.0
+
+### Fixed
+
+* Provided a new key `groupLabelKey` to allow splitting of the key used to render the Sidebar and the InfoLabel visible during drag operations. `groupTitleKey` continues to be used to render the Sidebar. #442 @thiagosatoshi
+* fix scroll left/right causes item move/edit to be at incorrect time #401 @acemac
+* now `getResizeProps` take `leftClassName` and `rightClassName` and returns className for left and right props @acemac
+* fix functionality of `itemTitle` and `itemDivTitle` [issue](https://github.com/namespace-ee/react-calendar-timeline/issues/429#issuecomment-426456693) @acemac
+
+### 0.21.0
+
+#### fixes
+
+* fix item dimensions not being rendered on zoom in/out @ilaiwi + @acemac
+* correct `right_sidebar` to `rightTitle` in readme @maxlibin
+
+#### breaking changes
+
+* add `rct` to `.top-header` and `.bottom-header` to become `.rct-top-header` and `.rct-bottom-header` @Simek
+* upgrade dev dependance `react@16.3` @acemac
+
+### 0.20.0
+
+### improvements
+* eliminate extra renders on every scroll - #357 [acemac](https://github.com/acemac)
+
+### Fixed
+* When the `date` prop on a `CustomMarker` changes the marker will now move on the timeline - #421 [kevinmanncito](https://github.com/kevinmanncito) [ilaiwi](https://github.com/ilaiwi)
+* Header has a bounce effect - #311 [acemac](https://github.com/acemac)
+
+####dev
+
+* update to `react-testing-library` version 5
+* remove deprecated `toBeInDom`
+
+
+
 ### 0.19.0
 
 ### Added

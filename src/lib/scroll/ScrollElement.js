@@ -25,32 +25,24 @@ class ScrollElement extends Component {
   refHandler = el => {
     this.scrollComponent = el
     this.props.scrollRef(el)
+    if(el){
+      el.addEventListener('wheel', this.handleWheel, {passive: false});
+    }
   }
 
   handleScroll = () => {
-    const { width } = this.props
-    const scrollComponent = this.scrollComponent
-
-    const scrollX = scrollComponent.scrollLeft
-
-    // move the virtual canvas if needed
-    // if scrollX is less...i dont know how to explain the logic here
-    if (scrollX < width * 0.5) {
-      scrollComponent.scrollLeft += width
-    }
-    if (scrollX > width * 1.5) {
-      scrollComponent.scrollLeft -= width
-    }
+    const scrollX = this.scrollComponent.scrollLeft
     this.props.onScroll(scrollX)
   }
 
   handleWheel = e => {
     const { traditionalZoom } = this.props
 
-    e.preventDefault()
+    
 
     // zoom in the time dimension
     if (e.ctrlKey || e.metaKey || e.altKey) {
+      e.preventDefault()
       const parentPosition = getParentPosition(e.currentTarget)
       const xPosition = e.clientX - parentPosition.x
 
@@ -59,25 +51,11 @@ class ScrollElement extends Component {
       // convert vertical zoom to horiziontal
       this.props.onWheelZoom(speed, xPosition, e.deltaY)
     } else if (e.shiftKey) {
+      e.preventDefault()
       // shift+scroll event from a touchpad has deltaY property populated; shift+scroll event from a mouse has deltaX
       this.scrollComponent.scrollLeft += e.deltaY || e.deltaX
 
       // no modifier pressed? we prevented the default event, so scroll or zoom as needed
-    } else {
-      if (e.deltaX !== 0) {
-        if (!traditionalZoom) {
-          this.scrollComponent.scrollLeft += e.deltaX
-        }
-      }
-      if (e.deltaY !== 0) {
-        window.scrollTo(window.pageXOffset, window.pageYOffset + e.deltaY)
-        if (traditionalZoom) {
-          const parentPosition = getParentPosition(e.currentTarget)
-          const xPosition = e.clientX - parentPosition.x
-
-          this.props.onWheelZoom(10, xPosition, e.deltaY)
-        }
-      }
     }
   }
 
@@ -187,6 +165,12 @@ class ScrollElement extends Component {
     }
   }
 
+  componentWillUnmount(){
+    if(this.scrollComponent){
+      this.scrollComponent.removeEventListener('wheel', this.handleWheel);
+    }
+  }
+
   render() {
     const { width, height, children } = this.props
     const { isDragging } = this.state
@@ -205,7 +189,6 @@ class ScrollElement extends Component {
         className="rct-scroll"
         style={scrollComponentStyle}
         onScroll={this.handleScroll}
-        onWheel={this.handleWheel}
         onMouseDown={this.handleMouseDown}
         onMouseMove={this.handleMouseMove}
         onMouseUp={this.handleMouseUp}
@@ -216,6 +199,7 @@ class ScrollElement extends Component {
       >
         {children}
       </div>
+
     )
   }
 }
