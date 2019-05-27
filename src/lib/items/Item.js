@@ -267,7 +267,7 @@ export default class Item extends Component {
               this.props.item,
               dragTime,
               undefined,
-              this.props.order + dragGroupDelta,
+              this.props.order.index + dragGroupDelta,
               this.props.order
             )
             
@@ -300,14 +300,14 @@ export default class Item extends Component {
           if (this.props.onDrop) {
             let dragTime = this.dragTime(e)
             let dragGroupDelta = this.dragGroupDelta(e)
-
+            var x = this.props.order;
             if (this.props.moveResizeValidator) {
               const validResult = this.props.moveResizeValidator(
                 'move',
                 this.props.item,
                 dragTime,
                 undefined,
-                this.props.order + dragGroupDelta,
+                this.props.order.index + dragGroupDelta,
                 this.props.order
               )
 
@@ -365,7 +365,7 @@ export default class Item extends Component {
               this.props.item,
               resizeTime,
               resizeEdge,
-              this.props.order + this.dragGroupDelta(e),
+              this.props.order.index + this.dragGroupDelta(e),
               this.props.order
             )
 
@@ -396,7 +396,7 @@ export default class Item extends Component {
               this.props.item,
               resizeTime,
               resizeEdge,
-              this.props.order + this.dragGroupDelta(e),
+              this.props.order.index + this.dragGroupDelta(e),
               this.props.order
             )
 
