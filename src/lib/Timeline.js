@@ -646,7 +646,7 @@ export default class ReactCalendarTimeline extends Component {
     return time
   }
 
-  dragItem = (item, dragTime, newGroupOrder) => {
+  dragItem = (item, dragTime, newGroupOrder, callback) => {
     let newGroup = this.props.groups[newGroupOrder]
     const keys = this.props.keys
 
@@ -655,6 +655,8 @@ export default class ReactCalendarTimeline extends Component {
       dragTime: dragTime,
       newGroupOrder: newGroupOrder,
       dragGroupTitle: newGroup ? _get(newGroup, keys.groupLabelKey) : ''
+    }, () => {
+      if (callback) callback();
     })
   }
 
@@ -667,11 +669,13 @@ export default class ReactCalendarTimeline extends Component {
     }
   }
 
-  resizingItem = (itemId, resizeTime, edge) => {
+  resizingItem = (itemId, resizeTime, edge, callback) => {
     this.setState({
       resizingItem: itemId,
       resizingEdge: edge,
       resizeTime: resizeTime
+    }, () => {
+      if (callback) callback();
     })
   }
 

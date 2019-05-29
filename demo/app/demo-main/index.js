@@ -38,7 +38,7 @@ export default class App extends Component {
   constructor(props) {
     super(props)
 
-    const { groups, items } = generateFakeData()
+    const { groups, items } = generateFakeData(1, 100)
     const defaultTimeStart = moment()
       .startOf('day')
       .toDate()
@@ -135,16 +135,52 @@ export default class App extends Component {
 
   moveResizeValidator = (action, item, time, edge, newGroupIndex, newGroup, currentGroup) => {
     //console.log(newGroupIndex, newGroup, currentGroupIndex, currentGroup);
+    let {items, groups} = this.state;
+    let start = moment(item.start);
+    let end = moment(item.end);
+   
+    const duration = moment.duration(
+			end.diff(start)
+		);
     let currentGroupIndex = currentGroup.index;
-    const isNewValid = ((newGroupIndex + 1) % 2) === ((currentGroupIndex + 1) % 2)
-    const returnIndex = !isNewValid ? newGroupIndex - 1 : newGroupIndex
-    const newTime = time < new Date().getTime() ?
-      Math.ceil(new Date().getTime() / (15 * 60 * 1000)) * (15 * 60 * 1000) :
-      time
-    return ({
-      time: newTime,
-      newGroupIndex: returnIndex
-    })
+   
+    time = moment(time);
+		start = time.clone();
+    end = time.clone().add(duration);
+    let cb = () => {
+      console.log("callback");
+      this.setState({groups});
+    }
+		if (end.isSameOrAfter(moment("2019-05-30"))) {
+      //console.log("conflict");
+      if (groups.length == 1) {
+        groups.push({
+          id: `100000`,
+          title: 'test',
+          rightTitle: 'test2',
+          label: `Label test`
+        })
+      }
+     
+      console.log("return");
+			return {
+				time,
+        newGroupIndex: 1,
+        callback: cb
+			};
+		} else if (end.isBefore(moment("2019-05-30"))) {
+      //console.log("clear");
+      if (groups.length == 2) {
+        groups.pop();
+      }
+      console.log("return");
+			return {
+				time,
+        newGroupIndex: 0,
+        callback: cb
+			};
+		}
+   
   }
 
   render() {

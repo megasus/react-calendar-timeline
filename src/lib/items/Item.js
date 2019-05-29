@@ -261,6 +261,7 @@ export default class Item extends Component {
         if (this.state.dragging) {
           let dragTime = this.dragTime(e)
           let dragGroupDelta = this.dragGroupDelta(e)
+          let callback = undefined;
           if (this.props.moveResizeValidator) {
             const validResult = this.props.moveResizeValidator(
               'move',
@@ -270,25 +271,25 @@ export default class Item extends Component {
               this.props.order.index + dragGroupDelta,
               this.props.order
             )
-            
             if (validResult.time) {
               dragTime = validResult.time
             } else {
               dragTime = validResult
             }
-            if (validResult.newGroupIndex) {
+            if (validResult.newGroupIndex !== undefined) {
               dragGroupDelta = validResult.newGroupIndex - this.props.order.index
             }
+            if (validResult.callback) callback = validResult.callback;
           }
 
           if (this.props.onDrag) {
             this.props.onDrag(
               this.itemId,
               dragTime,
-              this.props.order.index + dragGroupDelta
+              this.props.order.index + dragGroupDelta,
+              callback
             )
           }
-
           this.setState({
             dragTime: dragTime,
             dragGroupDelta: dragGroupDelta
@@ -300,7 +301,6 @@ export default class Item extends Component {
           if (this.props.onDrop) {
             let dragTime = this.dragTime(e)
             let dragGroupDelta = this.dragGroupDelta(e)
-            var x = this.props.order;
             if (this.props.moveResizeValidator) {
               const validResult = this.props.moveResizeValidator(
                 'move',
@@ -316,7 +316,7 @@ export default class Item extends Component {
               } else {
                 dragTime = validResult
               }
-              if (validResult.newGroupIndex) {
+              if (validResult.newGroupIndex !== undefined) {
                 dragGroupDelta = validResult.newGroupIndex - this.props.order.index
               }
             }
@@ -358,7 +358,7 @@ export default class Item extends Component {
             this.setState({ resizeEdge })
           }
           let resizeTime = this.resizeTimeSnap(this.timeFor(e))
-
+          let callback = undefined;
           if (this.props.moveResizeValidator) {
             const validResult = this.props.moveResizeValidator(
               'resize',
@@ -374,10 +374,11 @@ export default class Item extends Component {
             } else {
               resizeTime = validResult
             }
+            if (validResult.callback) callback = validResult.callback;
           }
 
           if (this.props.onResizing) {
-            this.props.onResizing(this.itemId, resizeTime, resizeEdge)
+            this.props.onResizing(this.itemId, resizeTime, resizeEdge, callback)
           }
 
           this.setState({

@@ -1,6 +1,6 @@
 {
   "name": "rsm-react-calendar-timeline",
-  "version": "0.25.7",
+  "version": "0.25.9",
   "description": "react calendar timeline",
   "main": "lib/index.js",
   "scripts": {
